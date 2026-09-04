@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบหารเงินกับเพื่อน</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-5">
+    <div class="max-w-md mx-auto bg-white p-6 rounded-xl shadow-md">
+        <h1 class="text-2xl font-bold mb-4 text-center">💰 ระบบหารเงิน (Host)</h1>
+        
+        <!-- ส่วนที่ 1: Host กรอกข้อมูล -->
+        <div class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium">ชื่อรายการ (เช่น ค่าส้มตำ)</label>
+                <input type="text" id="title" class="w-full border p-2 rounded" placeholder="ระบุชื่อรายการ">
+            </div>
+            <div>
+                <label class="block text-sm font-medium">ยอดเงินรวม (บาท)</label>
+                <input type="number" id="total" class="w-full border p-2 rounded" placeholder="0.00">
+            </div>
+            <div>
+                <label class="block text-sm font-medium">ชื่อเพื่อน (ใส่คอมม่าคั่น เช่น ส้ม,นัท,พลอย)</label>
+                <input type="text" id="friends" class="w-full border p-2 rounded" placeholder="ชื่อเพื่อน1, ชื่อเพื่อน2">
+            </div>
+            <div>
+                <label class="block text-sm font-medium">ช่องทางจ่ายเงิน (Host)</label>
+                <textarea id="payment" class="w-full border p-2 rounded" placeholder="เช่น กสิกร 012-3-45678-9 หรือ PromptPay 0812345678"></textarea>
+            </div>
+            <button onclick="calculateBill()" class="w-full bg-blue-500 text-white p-3 rounded-lg font-bold hover:bg-blue-600">
+                สร้างรายการและสรุปยอด
+            </button>
+        </div>
+
+        <!-- ส่วนที่ 2: แสดงผลสรุป -->
+        <div id="result" class="mt-6 hidden border-t pt-4">
+            <h2 class="text-lg font-bold mb-2">สรุปยอดที่ต้องจ่าย:</h2>
+            <div id="bill-details" class="bg-blue-50 p-3 rounded"></div>
+            <p class="mt-4 text-sm text-gray-600 italic">ส่งหน้านี้ให้เพื่อนดูได้เลย!</p>
+        </div>
+    </div>
+
+    <script>
+        function calculateBill() {
+            const title = document.getElementById('title').value;
+            const total = parseFloat(document.getElementById('total').value);
+            const friendsInput = document.getElementById('friends').value;
+            const payment = document.getElementById('payment').value;
+            const friendsArray = friendsInput.split(',').map(f => f.trim());
+
+            if (!title || !total || !friendsInput) {
+                alert('กรุณากรอกข้อมูลให้ครบถ้วน');
+                return;
+            }
+
+            const perPerson = (total / friendsArray.length).toFixed(2);
+            let html = `<p class="font-bold text-blue-700">${title}</p>`;
+            html += `<p>ยอดรวม: ${total} บาท (เฉลี่ยคนละ ${perPerson} บาท)</p><hr class="my-2">`;
+            
+            friendsArray.forEach(name => {
+                html += `<div class="flex justify-between py-1"><span>${name}</span> <span class="font-bold text-red-500">${perPerson} บาท</span></div>`;
+            });
+
+            html += `<hr class="my-2"><p class="text-sm font-bold">📌 โอนได้ที่: ${payment}</p>`;
+
+            document.getElementById('bill-details').innerHTML = html;
+            document.getElementById('result').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
